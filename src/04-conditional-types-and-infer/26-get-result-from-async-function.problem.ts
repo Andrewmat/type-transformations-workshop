@@ -10,7 +10,25 @@ const getServerSideProps = async () => {
   };
 };
 
-type InferPropsFromServerSideFunction = unknown;
+// type InferPropsFromServerSideFunction<T> = T extends (
+//   ...args: any[]
+// ) => infer Result
+//   ? Awaited<Result> extends { props: infer Props }
+//     ? Props
+//     : never
+//   : never;
+
+/*
+Não utilizar infer pra "descascar" cada layer do extends
+Ao invés disso, lembrar de diminuir o máximo o "slot"
+que o infer é utilizado
+*/
+
+type InferPropsFromServerSideFunction<T> = T extends (
+  ...args: any[]
+) => Promise<{ props: infer Props }>
+  ? Props
+  : never;
 
 type tests = [
   Expect<

@@ -10,10 +10,19 @@ const parser3 = {
   extract: () => true,
 };
 
-type GetParserResult<T> = unknown;
+// Não fazer uma branch para cada caso
+// ao inves disso, dá pra colocar infer
+// múltiplos tipos usando union
+
+type GetParserResult<T> = T extends
+  | ((...args: any) => infer Result)
+  | { parse: (...args: any) => infer Result }
+  | { extract: (...args: any) => infer Result }
+  ? Result
+  : never;
 
 type tests = [
   Expect<Equal<GetParserResult<typeof parser1>, number>>,
   Expect<Equal<GetParserResult<typeof parser2>, string>>,
-  Expect<Equal<GetParserResult<typeof parser3>, boolean>>,
+  Expect<Equal<GetParserResult<typeof parser3>, boolean>>
 ];
